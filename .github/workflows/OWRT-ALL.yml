@@ -10,8 +10,8 @@ on:
   #     - completed
   #手动编译
   #自动编译：每天早上4点
-  schedule:
-    - cron: 0 20 * * *
+  # schedule:
+  #   - cron: 0 20 * * *
   workflow_dispatch:
     inputs:
       PACKAGE:
