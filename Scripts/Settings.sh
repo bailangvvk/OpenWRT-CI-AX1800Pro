@@ -80,8 +80,8 @@ echo "CONFIG_PACKAGE_curl=y" >> ./.config
 # BBR 拥塞控制算法(终端侧) + CAKE 一种现代化的队列管理算法(路由侧)
 # echo "CONFIG_PACKAGE_luci-app-sqm=y" >> ./.config
 # echo "CONFIG_PACKAGE_kmod-sched-cake=y" >> ./.config
-echo "CONFIG_PACKAGE_kmod-tcp-bbr=y" >> ./.config
-echo "CONFIG_DEFAULT_tcp_bbr=y" >> ./.config
+# echo "CONFIG_PACKAGE_kmod-tcp-bbr=y" >> ./.config
+# echo "CONFIG_DEFAULT_tcp_bbr=y" >> ./.config
 # docker(只能集成)
 # echo "CONFIG_PACKAGE_luci-app-dockerman=y" >> ./.config
 
