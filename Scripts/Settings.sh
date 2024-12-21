@@ -106,3 +106,5 @@ echo "CONFIG_PACKAGE_curl=y" >> ./.config
 # # 内核调试信息（可选）: 如果需要调试，可以选择启用内核调试和相关日志支持
 # echo "CONFIG_DEBUG_INFO=n" >> ./.config
 # echo "CONFIG_DEBUG_INFO_REDUCED=n" >> ./.config
+# qBittorrent
+echo "CONFIG_PACKAGE_luci-app-qbittorrent=y" >> ./.config
