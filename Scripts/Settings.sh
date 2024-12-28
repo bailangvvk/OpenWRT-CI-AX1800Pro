@@ -54,3 +54,55 @@ if [[ $WRT_TARGET == *"IPQ"* ]]; then
 		echo "CONFIG_NSS_FIRMWARE_VERSION_12_2=y" >> ./.config
 	fi
 fi
+
+#修改jdc re-ss-01 (亚瑟) 的内核大小为12M
+sed -i "/^define Device\/jdcloud_re-ss-01/,/^endef/ { /KERNEL_SIZE := 6144k/s//KERNEL_SIZE := 12288k/ }" target/linux/qualcommax/image/ipq60xx.mk
+
+#修改jdc re-cs-02 (雅典娜) 的内核大小为12M
+sed -i "/^define Device\/jdcloud_re-cs-02/,/^endef/ { /KERNEL_SIZE := 6144k/s//KERNEL_SIZE := 12288k/ }" target/linux/qualcommax/image/ipq60xx.mk
+
+#修改jdc re-cs-07 (太乙) 的内核大小为12M
+sed -i "/^define Device\/jdcloud_re-cs-07/,/^endef/ { /KERNEL_SIZE := 6144k/s//KERNEL_SIZE := 12288k/ }" target/linux/qualcommax/image/ipq60xx.mk
+
+# 想要剔除的
+# echo "CONFIG_PACKAGE_htop=n" >> ./.config
+# echo "CONFIG_PACKAGE_iperf3=n" >> ./.config
+echo "CONFIG_PACKAGE_luci-app-wolplus=n" >> ./.config
+echo "CONFIG_PACKAGE_luci-app-tailscale=n" >> ./.config
+echo "CONFIG_PACKAGE_luci-app-advancedplus=n" >> ./.config
+echo "CONFIG_PACKAGE_luci-theme-kucat=n" >> ./.config
+
+# 可以让FinalShell查看文件列表并且ssh连上不会自动断开
+echo "CONFIG_PACKAGE_openssh-sftp-server=y" >> ./.config
+# 解析、查询、操作和格式化 JSON 数据
+echo "CONFIG_PACKAGE_jq=y" >> ./.config
+# 简单明了的系统资源占用查看工具
+echo "CONFIG_PACKAGE_btop=y" >> ./.config
+# 多网盘存储
+echo "CONFIG_PACKAGE_luci-app-alist=y" >> ./.config
+# 强大的工具(需要添加源或git clone)
+# echo "CONFIG_PACKAGE_luci-app-lucky=y" >> ./.config
+# 网络通信工具
+echo "CONFIG_PACKAGE_curl=y" >> ./.config
+# BBR 拥塞控制算法(终端侧)
+# echo "CONFIG_PACKAGE_kmod-tcp-bbr=y" >> ./.config
+# echo "CONFIG_DEFAULT_tcp_bbr=y" >> ./.config
+# 磁盘管理
+echo "CONFIG_PACKAGE_luci-app-diskman=y" >> ./.config
+# 其他调整
+# 大鹅
+echo "CONFIG_PACKAGE_luci-app-daed=y" >> ./.config
+# 大鹅-next
+# echo "CONFIG_PACKAGE_luci-app-daed-next=y" >> ./.config
+＃ 连上ssh不会断开并且显示文件管理
+echo "CONFIG_PACKAGE_openssh-sftp-server"=y
+# echo "CONFIG_PACKAGE_kmod-tcp-bbr=y" >> ./.config
+# echo "CONFIG_DEFAULT_tcp_bbr=y" >> ./.config
+# docker只能集成
+echo "CONFIG_PACKAGE_luci-app-dockerman=y" >> ./.config
+# 集成Lucky(大吉)
+echo "CONFIG_PACKAGE_luci-app-lucky=y" >> ./.config
+# qBittorrent
+echo "CONFIG_PACKAGE_luci-app-qbittorrent=y" >> ./.config
+# 添加Homebox内网测速
+# echo "CONFIG_PACKAGE_luci-app-homebox=y" >> ./.config
