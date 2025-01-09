@@ -271,9 +271,10 @@ jobs:
       - name: Package Firmware(打包固件)
         run: |
           # cd ./wrt/ && mkdir ./upload/
-          cd $OPENWRT_PATH/ && mkdir ./upload/
+          cd $OPENWRT_PATH/ && mkdir $OPENWRT_PATH/upload/
 
-          cp -f ./.config ./upload/Config_"$WRT_TARGET"_"$WRT_VER"_"$WRT_DATE".txt
+          # cp -f ./.config ./upload/Config_"$WRT_TARGET"_"$WRT_VER"_"$WRT_DATE".txt
+          cp -f ./.config $OPENWRT_PATH/upload/Config_"$WRT_TARGET"_"$WRT_VER"_"$WRT_DATE".txt
 
           if [[ $WRT_TEST != 'true' ]]; then
             KVER=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^kernel - \K[\d\.]+' {} \;)
@@ -285,11 +286,13 @@ jobs:
                 EXT=$(basename $FILE | cut -d '.' -f 2-)
                 NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($TYPE\).*")
                 NEW_FILE="$WRT_VER"_"$NAME"_"$WRT_DATE"."$EXT"
-                mv -f $FILE ./upload/$NEW_FILE
+                # mv -f $FILE ./upload/$NEW_FILE
+                mv -f $FILE $OPENWRT_PATH/upload/$NEW_FILE
               done
             done
 
-            find ./bin/targets/ -type f -exec mv -f {} ./upload/ \;
+            # find ./bin/targets/ -type f -exec mv -f {} ./upload/ \;
+            find ./bin/targets/ -type f -exec mv -f {} $OPENWRT_PATH/upload/ \;
           fi
 
           echo "WRT_KVER=${KVER:-none}" >> $GITHUB_ENV
