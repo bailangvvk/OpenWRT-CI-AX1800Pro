@@ -116,6 +116,10 @@ echo "CONFIG_PACKAGE_v2ray-geosite=y" >> ./.config
 # NSS的sqm
 echo "CONFIG_PACKAGE_luci-app-sqm=y" >> ./.config
 echo "CONFIG_PACKAGE_sqm-scripts-nss=y" >> ./.config
+# NSS MASH
+echo "CONFIG_ATH11K_NSS_MESH=y" >> ./.config
+# 不知道什么 加上去
+echo "CONFIG_PACKAGE_MAC80211_NSS_REDIRECT=y" >> ./.config
 # istore 编译报错
 # echo "CONFIG_PACKAGE_luci-app-istorex=y" >> ./.config
 # QuickStart
