@@ -255,12 +255,10 @@ jobs:
               done
             done
 
-            mkdir -p $OPENWRT_PATH/pk
-
-
-            mv -f $OPENWRT_PATH/bin/packages/*/*/*.ipk $OPENWRT_PATH/pk
-            tar -zcf Packages.tar.gz $OPENWRT_PATH/pk
-            mv $OPENWRT_PATH/pk/Packages.tar.gz ./upload/
+            # mkdir -p $OPENWRT_PATH/pk
+            # mv -f $OPENWRT_PATH/bin/packages/*/*/*.ipk $OPENWRT_PATH/pk
+            # tar -zcf Packages.tar.gz $OPENWRT_PATH/pk
+            # mv $OPENWRT_PATH/pk/Packages.tar.gz ./upload/
 
             find ./bin/targets/ -type f -exec mv -f {} ./upload/ \;
           fi
