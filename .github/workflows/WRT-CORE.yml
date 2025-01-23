@@ -271,8 +271,8 @@ jobs:
         with:
           tag_name: ${{env.WRT_TARGET}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
           # files: ./wrt/upload/*.*
-          # files: ${{ env.OPENWRT_PATH }}/upload/*.*
-          files: ${{ env.OPENWRT_PATH }}/upload/*.{bin,gz,txt}
+          files: ${{ env.OPENWRT_PATH }}/upload/*.*
+          # files: ${{ env.OPENWRT_PATH }}/upload/*.{bin,gz,txt}
           body: |
             这是个平台固件包，内含多个设备！
             请注意选择你需要的设备固件！
