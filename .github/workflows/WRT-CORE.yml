@@ -1,3 +1,4 @@
+
 #云编译公用核心
 name: WRT-CORE
 
@@ -54,39 +55,28 @@ env:
   WRT_BRANCH: ${{inputs.WRT_BRANCH}}
   WRT_PACKAGE: ${{inputs.WRT_PACKAGE}}
   WRT_TEST: ${{inputs.WRT_TEST}}
+  # CACHE_TOOLCHAIN: true
 
 jobs:
   core:
     name: ${{inputs.WRT_SOURCE}}
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Projects(结算项目)
-        uses: actions/checkout@main
-
       - name: Free Disk Space(清理磁盘空间)
-        uses: endersonmenezes/free-disk-space@main
+        uses: FirelightFlagboy/gh-runner-free-disk-space@main
         with:
-          testing: false
-          remove_android: true
-          remove_dotnet: true
-          remove_haskell: true
-          remove_tool_cache: true
-          remove_swap: true
-          remove_packages: "android* azure* clang* dotnet* firefox* ghc* golang* google* libclang* libgl1* lld* llvm* \
-            microsoft* mongodb* mono* mysql* nodejs* openjdk* php* postgresql* powershell* snap* temurin* yarn* zulu*"
-          remove_packages_one_command: true
-          remove_folders: "/etc/apt/sources.list.d* /etc/mono* /etc/mysql* /usr/include/linux/android* /usr/lib/llvm* /usr/lib/mono* \
-            /usr/local/lib/android* /usr/local/lib/node_modules* /usr/local/share/chromium* /usr/local/share/powershell* \
-            /usr/local/share/vcpkg/ports/azure* /usr/local/share/vcpkg/ports/google* /usr/local/share/vcpkg/ports/libpq/android* \
-            /usr/local/share/vcpkg/ports/llvm* /usr/local/share/vcpkg/ports/mysql* /usr/local/share/vcpkg/ports/snap* \
-            /usr/share/azure* /usr/share/dotnet* /usr/share/glade* /usr/share/miniconda* /usr/share/php* /usr/share/swift \
-            /var/lib/mysql* /var/log/azure*"
+          android: true
+          dotnet: true
+          haskell: true
+          docker-images: true
+          large-packages: true
+          swap-storage: true
+          tool-cache: true
 
-      - name: Initialization Environment(初始化环境)
+      - name: Initialization Environment(安装依赖环境)
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          docker rmi $(docker images -q)
           sudo -E apt -yqq update
           sudo -E apt -yqq full-upgrade
           sudo -E apt -yqq autoremove --purge
@@ -97,6 +87,18 @@ jobs:
           sudo apt-get install -yqq clang-15
           sudo -E systemctl daemon-reload
           sudo -E timedatectl set-timezone "Asia/Shanghai"
+
+          echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
+
+      - name: Combine Disks(合并磁盘)
+        uses: easimon/maximize-build-space@master
+        with:
+          swap-size-mb: 2048
+          temp-reserve-mb: 100
+          root-reserve-mb: 2048
+
+      - name: Checkout Projects(拉取云编译仓库)
+        uses: actions/checkout@main
 
       - name: Initialization Values(初始化变量)
         run: |
@@ -110,14 +112,42 @@ jobs:
           echo "WRT_VER=$WRT_VER" >> $GITHUB_ENV
           echo "WRT_TYPE=$WRT_TYPE" >> $GITHUB_ENV
 
-      - name: Clone Code(拉取源码)
+      # - name: Cache Toolchain(缓存工具链)
+      #   if: env.CACHE_TOOLCHAIN == 'true'
+      #   uses: HiGarfield/cachewrtbuild@main
+      #   with:
+      #     ccache: false
+      #     mixkey: ${{ env.SOURCE_REPO }}-${{ env.REPO_BRANCH }}-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
+      #     mixkey: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
+      #     prefix: ${{ env.OPENWRT_PATH }}
+
+      - name: Clone Code(拉取编译的固件源码)
         run: |
+          pwd
+        
+          df -hT $GITHUB_WORKSPACE
+          
           git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_REPO ./wrt/
 
-          cd ./wrt/ && echo "WRT_HASH=$(git log -1 --pretty=format:'%h')" >> $GITHUB_ENV
+          cd wrt && echo "WRT_HASH=$(git log -1 --pretty=format:'%h')" >> $GITHUB_ENV
 
-      - name: Check Scripts(检查代码)
+          echo "WRT_HASH: $WRT_HASH"
+          
+          echo "OPENWRT_PATH: $OPENWRT_PATH"
+
+          # tree $OPENWRT_PATH
+
+          # GitHub Action 移除国内下载源
+          PROJECT_MIRRORS_FILE="./scripts/projectsmirrors.json"
+          if [ -f "$PROJECT_MIRRORS_FILE" ]; then
+            sed -i '/.cn\//d; /tencent/d; /aliyun/d' "$PROJECT_MIRRORS_FILE"
+          fi
+
+      - name: Check Scripts(将所有的rxt sh后缀文件全部赋予执行权限)
         run: |
+
+          cd $OPENWRT_PATH
+        
           find ./ -maxdepth 3 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
 
       - name: Check Caches(检查缓存)
@@ -128,6 +158,8 @@ jobs:
           key: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
           restore-keys: ${{env.WRT_TARGET}}-${{env.WRT_VER}}
           path: |
+            cd $OPENWRT_PATH
+          
             ./wrt/.ccache
             ./wrt/staging_dir/host*
             ./wrt/staging_dir/tool*
@@ -135,6 +167,9 @@ jobs:
       - name: Update Caches(更新缓存)
         if: env.WRT_TEST != 'true'
         run: |
+
+          cd $OPENWRT_PATH
+          
           if [ -d "./wrt/staging_dir" ]; then
             find "./wrt/staging_dir" -type d -name "stamp" -not -path "*target*" | while read -r DIR; do
               find "$DIR" -type f -exec touch {} +
@@ -156,47 +191,61 @@ jobs:
             echo "caches cleanup done!"
           fi
 
-      - name: Update Feeds(更新依赖源)
+      - name: Update Feeds(更新软件包)
         run: |
-          cd ./wrt/
+          # cd ./wrt/
+
+          cd $OPENWRT_PATH/wrt/
 
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Custom Packages(自定义替换软件包)
+      - name: Custom Packages(自定义软件包设置/更新)
         run: |
-          cd ./wrt/package/
+          # cd ./wrt/package/
+
+          cd $OPENWRT_PATH/wrt/package
+
+          # find $OPENWRT_PATH -name Packages.sh
 
           $GITHUB_WORKSPACE/Scripts/Packages.sh
           $GITHUB_WORKSPACE/Scripts/Handles.sh
 
       - name: Custom Settings(自定义设置)
         run: |
-          cd ./wrt/
+          # cd ./wrt/
+
+          cd $OPENWRT_PATH/wrt
 
           cat $GITHUB_WORKSPACE/Config/$WRT_TARGET.txt $GITHUB_WORKSPACE/Config/GENERAL.txt >> .config
 
           $GITHUB_WORKSPACE/Scripts/Settings.sh
 
-          make defconfig -j$(nproc)
+          make defconfig -j$(nproc) && make clean
 
-      - name: Download Packages(下载依赖)
+      - name: Download Packages(下载软件包依赖)
         if: env.WRT_TEST != 'true'
         run: |
-          cd ./wrt/
+          # cd ./wrt/
+
+          cd $OPENWRT_PATH/wrt
 
           make download -j$(nproc)
 
       - name: Compile Firmware(编译固件)
         if: env.WRT_TEST != 'true'
         run: |
-          cd ./wrt/
+          # cd ./wrt/
+
+          cd $OPENWRT_PATH/wrt
 
           make -j$(nproc) || make -j1 V=s
 
-      - name: Machine Information(设备信息)
+      - name: Machine Information(机器信息)
         run: |
-          cd ./wrt/
+          # cd ./wrt/
+
+          cd $OPENWRT_PATH/wrt
 
           echo "======================="
           lscpu | grep -E "name|Core|Thread"
@@ -208,7 +257,9 @@ jobs:
 
       - name: Package Firmware(打包固件)
         run: |
-          cd ./wrt/ && mkdir ./upload/
+          # cd ./wrt/ && mkdir ./upload/
+
+          cd $OPENWRT_PATH/wrt && mkdir ./upload/
 
           cp -f ./.config ./upload/Config_"$WRT_TARGET"_"$WRT_VER"_"$WRT_DATE".txt
 
@@ -229,13 +280,16 @@ jobs:
             find ./bin/targets/ -type f -exec mv -f {} ./upload/ \;
           fi
 
+          rm -rf $OPENWRT_PATH/wrt/upload/*.itb
+
           echo "WRT_KVER=${KVER:-none}" >> $GITHUB_ENV
 
       - name: Release Firmware(发布固件)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{env.WRT_TARGET}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
-          files: ./wrt/upload/*.*
+          # files: ./wrt/upload/*.*
+          files: ${{ env.OPENWRT_PATH }}/wrt/upload/*.*
           body: |
             这是个平台固件包，内含多个设备！
             请注意选择你需要的设备固件！
