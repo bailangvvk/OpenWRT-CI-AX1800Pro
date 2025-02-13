@@ -108,3 +108,4 @@ mkdir -p Package/libcron && wget -O Package/libcron/Makefile https://raw.githubu
 # git clone https://github.com/sbwml/luci-app-daed-next package/daed-next
 
 git_sparse_clone main https://github.com/kenzok8/small-package luci-app-natter2 natter2 daed-next luci-app-daed-next
+
