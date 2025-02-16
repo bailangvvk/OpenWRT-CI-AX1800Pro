@@ -62,16 +62,16 @@ jobs:
     name: ${{inputs.WRT_SOURCE}}
     runs-on: ubuntu-22.04
     steps:
-      - name: Free Disk Space(清理磁盘空间)
-        uses: FirelightFlagboy/gh-runner-free-disk-space@main
-        with:
-          android: true
-          dotnet: true
-          haskell: true
-          docker-images: true
-          large-packages: true
-          swap-storage: true
-          tool-cache: true
+      # - name: Free Disk Space(清理磁盘空间)
+      #   uses: FirelightFlagboy/gh-runner-free-disk-space@main
+      #   with:
+      #     android: true
+      #     dotnet: true
+      #     haskell: true
+      #     docker-images: true
+      #     large-packages: true
+      #     swap-storage: true
+      #     tool-cache: true
 
       - name: Initialization Environment(安装依赖环境)
         env:
