@@ -150,46 +150,46 @@ jobs:
         
           find ./ -maxdepth 3 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
 
-      - name: Check Caches(检查缓存)
-        id: check-cache
-        if: env.WRT_TEST != 'true'
-        uses: actions/cache@main
-        with:
-          key: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
-          restore-keys: ${{env.WRT_TARGET}}-${{env.WRT_VER}}
-          path: |
-            cd $OPENWRT_PATH
+      # - name: Check Caches(检查缓存)
+      #   id: check-cache
+      #   if: env.WRT_TEST != 'true'
+      #   uses: actions/cache@main
+      #   with:
+      #     key: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
+      #     restore-keys: ${{env.WRT_TARGET}}-${{env.WRT_VER}}
+      #     path: |
+      #       cd $OPENWRT_PATH
           
-            ./wrt/.ccache
-            ./wrt/staging_dir/host*
-            ./wrt/staging_dir/tool*
+      #       ./wrt/.ccache
+      #       ./wrt/staging_dir/host*
+      #       ./wrt/staging_dir/tool*
 
-      - name: Update Caches(更新缓存)
-        if: env.WRT_TEST != 'true'
-        run: |
+      # - name: Update Caches(更新缓存)
+      #   if: env.WRT_TEST != 'true'
+      #   run: |
 
-          cd $OPENWRT_PATH
+      #     cd $OPENWRT_PATH
           
-          if [ -d "./wrt/staging_dir" ]; then
-            find "./wrt/staging_dir" -type d -name "stamp" -not -path "*target*" | while read -r DIR; do
-              find "$DIR" -type f -exec touch {} +
-            done
+      #     if [ -d "./wrt/staging_dir" ]; then
+      #       find "./wrt/staging_dir" -type d -name "stamp" -not -path "*target*" | while read -r DIR; do
+      #         find "$DIR" -type f -exec touch {} +
+      #       done
 
-            mkdir -p ./wrt/tmp && echo "1" > ./wrt/tmp/.build
+      #       mkdir -p ./wrt/tmp && echo "1" > ./wrt/tmp/.build
 
-            echo "toolchain skiped done!"
-          else
-            echo "caches missed!"
-          fi
+      #       echo "toolchain skiped done!"
+      #     else
+      #       echo "caches missed!"
+      #     fi
 
-          if ${{steps.check-cache.outputs.cache-hit != 'true'}}; then
-            CACHE_LIST=$(gh cache list --key "$WRT_TARGET-$WRT_VER" | cut -f 1)
-            for CACHE_KEY in $CACHE_LIST; do
-               gh cache delete $CACHE_KEY
-            done
+      #     if ${{steps.check-cache.outputs.cache-hit != 'true'}}; then
+      #       CACHE_LIST=$(gh cache list --key "$WRT_TARGET-$WRT_VER" | cut -f 1)
+      #       for CACHE_KEY in $CACHE_LIST; do
+      #          gh cache delete $CACHE_KEY
+      #       done
 
-            echo "caches cleanup done!"
-          fi
+      #       echo "caches cleanup done!"
+      #     fi
 
       - name: Update Feeds(更新软件包)
         run: |
