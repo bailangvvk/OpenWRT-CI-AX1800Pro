@@ -62,6 +62,20 @@ jobs:
     name: ${{inputs.WRT_SOURCE}}
     runs-on: ubuntu-22.04
     steps:
+      - name: Check Server Performance(检查服务器性能)
+        run: |
+          echo "警告⚠"
+          echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
+          echo -e "已知CPU型号（降序）：7763，8370C，8272CL，8171M，E5-2673 \n"
+          echo "--------------------------CPU信息--------------------------"
+          echo "CPU物理数量：$(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)"
+          echo -e "CPU核心信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
+          echo "--------------------------内存信息--------------------------"
+          echo "已安装内存详细信息："
+          echo -e "$(sudo lshw -short -C memory | grep GiB) \n"
+          echo "--------------------------硬盘信息--------------------------"
+          echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
+
       # - name: Free Disk Space(清理磁盘空间)
       #   uses: FirelightFlagboy/gh-runner-free-disk-space@main
       #   with:
@@ -131,14 +145,14 @@ jobs:
           echo "WRT_VER=$WRT_VER" >> $GITHUB_ENV
           echo "WRT_TYPE=$WRT_TYPE" >> $GITHUB_ENV
 
-      # - name: Cache Toolchain(缓存工具链)
-      #   if: env.CACHE_TOOLCHAIN == 'true'
-      #   uses: HiGarfield/cachewrtbuild@main
-      #   with:
-      #     ccache: false
-      #     mixkey: ${{ env.SOURCE_REPO }}-${{ env.REPO_BRANCH }}-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
-      #     mixkey: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
-      #     prefix: ${{ env.OPENWRT_PATH }}
+      - name: Cache Toolchain(缓存工具链)
+        if: env.CACHE_TOOLCHAIN == 'true'
+        uses: HiGarfield/cachewrtbuild@main
+        with:
+          ccache: false
+          # mixkey: ${{ env.SOURCE_REPO }}-${{ env.REPO_BRANCH }}-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
+          mixkey: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
+          prefix: ${{ env.OPENWRT_PATH }}
 
       - name: Clone Code(拉取编译的固件源码)
         run: |
@@ -169,44 +183,81 @@ jobs:
         
           find ./ -maxdepth 3 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
 
+      - name: Check Caches(检查缓存)
+        id: check-cache
+        if: env.WRT_TEST != 'true'
+        uses: actions/cache@main
+        with:
+          key: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
+          restore-keys: ${{env.WRT_TARGET}}-${{env.WRT_VER}}
+          path: |
+            cd $OPENWRT_PATH
+          
+            ./wrt/.ccache
+            ./wrt/staging_dir/host*
+            ./wrt/staging_dir/tool*
+
+      - name: Update Caches(更新缓存)
+        if: env.WRT_TEST != 'true'
+        run: |
+
+          cd $OPENWRT_PATH
+          
+          if [ -d "./wrt/staging_dir" ]; then
+            find "./wrt/staging_dir" -type d -name "stamp" -not -path "*target*" | while read -r DIR; do
+              find "$DIR" -type f -exec touch {} +
+            done
+
+            mkdir -p ./wrt/tmp && echo "1" > ./wrt/tmp/.build
+
+            echo "toolchain skiped done!"
+          else
+            echo "caches missed!"
+          fi
+
+          if ${{steps.check-cache.outputs.cache-hit != 'true'}}; then
+            CACHE_LIST=$(gh cache list --key "$WRT_TARGET-$WRT_VER" | cut -f 1)
+            for CACHE_KEY in $CACHE_LIST; do
+               gh cache delete $CACHE_KEY
+            done
+
+            echo "caches cleanup done!"
+          fi
+
+      # 不行
       # - name: Check Caches(检查缓存)
       #   id: check-cache
       #   if: env.WRT_TEST != 'true'
       #   uses: actions/cache@main
       #   with:
-      #     key: ${{env.WRT_TARGET}}-${{env.WRT_VER}}-${{env.WRT_HASH}}
-      #     restore-keys: ${{env.WRT_TARGET}}-${{env.WRT_VER}}
-      #     path: |
-      #       cd $OPENWRT_PATH
-          
-      #       ./wrt/.ccache
-      #       ./wrt/staging_dir/host*
-      #       ./wrt/staging_dir/tool*
-
+      #     key: ${{ env.WRT_TARGET }}-${{ env.WRT_VER }}-${{ env.WRT_HASH }}
+      #     restore-keys: ${{ env.WRT_TARGET }}-${{ env.WRT_VER }}
+      #     path: $OPENWRT_PATH/wrt/.ccache,$OPENWRT_PATH/wrt/staging_dir/host*, $OPENWRT_PATH/wrt/staging_dir/tool*
+    
       # - name: Update Caches(更新缓存)
       #   if: env.WRT_TEST != 'true'
       #   run: |
-
       #     cd $OPENWRT_PATH
           
       #     if [ -d "./wrt/staging_dir" ]; then
       #       find "./wrt/staging_dir" -type d -name "stamp" -not -path "*target*" | while read -r DIR; do
       #         find "$DIR" -type f -exec touch {} +
       #       done
-
+      
       #       mkdir -p ./wrt/tmp && echo "1" > ./wrt/tmp/.build
-
-      #       echo "toolchain skiped done!"
+      
+      #       echo "toolchain skipped done!"
       #     else
       #       echo "caches missed!"
       #     fi
-
-      #     if ${{steps.check-cache.outputs.cache-hit != 'true'}}; then
+      
+      #     # Only run cache cleanup if cache was not hit
+      #     if [ "${{ steps.check-cache.outputs.cache-hit }}" != 'true' ]; then
       #       CACHE_LIST=$(gh cache list --key "$WRT_TARGET-$WRT_VER" | cut -f 1)
       #       for CACHE_KEY in $CACHE_LIST; do
       #          gh cache delete $CACHE_KEY
       #       done
-
+      
       #       echo "caches cleanup done!"
       #     fi
 
