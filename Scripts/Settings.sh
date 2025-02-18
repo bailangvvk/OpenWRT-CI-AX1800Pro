@@ -171,7 +171,7 @@ echo "CONFIG_PACKAGE_luci-app-uhttpd=y" >> ./.config
 # MosDNS
 echo "CONFIG_PACKAGE_luci-app-mosdns=y" >> ./.config
 # Natter2 报错
-echo "CONFIG_PACKAGE_luci-app-natter2=y" >> ./.config
+# echo "CONFIG_PACKAGE_luci-app-natter2=y" >> ./.config
 # 文件管理器
 echo "CONFIG_PACKAGE_luci-app-filemanager=y" >> ./.config
 # 不要coremark 避免多线程编译报错(已解决)
