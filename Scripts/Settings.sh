@@ -48,9 +48,9 @@ if [[ $WRT_TARGET == *"IPQ"* ]]; then
 	echo "CONFIG_FEED__packages=n" >> ./.config
 	# echo "CONFIG_FEED_sqm_scripts_=n" >> ./.config
 	#设置版本
-	echo "CONFIG__FIRMWARE_VERSION_11_4=n" >> ./.config
-	# echo "CONFIG__FIRMWARE_VERSION_12_2=y" >> ./.config
-	echo "CONFIG__FIRMWARE_VERSION_12_5=y" >> ./.config
+	echo "CONFIG_FIRMWARE_VERSION_11_4=n" >> ./.config
+	# echo "CONFIG_FIRMWARE_VERSION_12_2=y" >> ./.config
+	echo "CONFIG_NSS_FIRMWARE_VERSION_12_5=y" >> ./.config
 fi
 
 #编译器优化
