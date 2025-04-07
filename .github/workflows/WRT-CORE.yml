@@ -120,10 +120,10 @@ jobs:
           temp-reserve-mb: 100
           root-reserve-mb: 2048
 
-      - name: Checkout Projects
+      - name: Checkout Projects(拉取云编译仓库(本仓库)脚本)
         uses: actions/checkout@main
 
-      - name: Initialization Values
+      - name: Initialization Values(初始化变量)
         run: |
           echo "WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")" >> $GITHUB_ENV
           echo "WRT_MARK=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 1)" >> $GITHUB_ENV
@@ -136,7 +136,7 @@ jobs:
           sudo chown $USER:$USER $OPENWRT_PATH/build_wrt
           sudo ln -s $OPENWRT_PATH/build_wrt $GITHUB_WORKSPACE/wrt
 
-      - name: Clone Code
+      - name: Clone Code(拉取编译的固件源码)
         run: |
           git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_REPO ./wrt/
 
@@ -148,11 +148,11 @@ jobs:
             sed -i '/.cn\//d; /tencent/d; /aliyun/d' "$PROJECT_MIRRORS_FILE"
           fi
 
-      - name: Check Scripts
+      - name: Check Scripts(将所有的rxt sh后缀文件全部赋予执行权限)
         run: |
           find ./ -maxdepth 3 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
 
-      - name: Check Caches
+      - name: Check Caches(检查缓存)
         id: check-cache
         if: env.WRT_TEST != 'true'
         uses: actions/cache@main
@@ -164,7 +164,7 @@ jobs:
             ./wrt/staging_dir/host*
             ./wrt/staging_dir/tool*
 
-      - name: Update Caches
+      - name: Update Caches(更新缓存)
         if: env.WRT_TEST != 'true'
         run: |
           if [ -d "./wrt/staging_dir" ]; then
@@ -188,21 +188,21 @@ jobs:
             echo "caches cleanup done!"
           fi
 
-      - name: Update Feeds
+      - name: Update Feeds(更新软件包)
         run: |
           cd ./wrt/
 
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Custom Packages
+      - name: Custom Packages(自定义软件包设置/更新)
         run: |
           cd ./wrt/package/
 
           $GITHUB_WORKSPACE/Scripts/Packages.sh
           $GITHUB_WORKSPACE/Scripts/Handles.sh
 
-      - name: Custom Settings
+      - name: Custom Settings(自定义设置)
         run: |
           cd ./wrt/
 
@@ -212,21 +212,21 @@ jobs:
 
           make defconfig -j$(nproc) && make clean -j$(nproc)
 
-      - name: Download Packages
+      - name: Download Packages(下载软件包依赖)
         if: env.WRT_TEST != 'true'
         run: |
           cd ./wrt/
 
           make download -j$(nproc)
 
-      - name: Compile Firmware
+      - name: Compile Firmware(编译固件)
         if: env.WRT_TEST != 'true'
         run: |
           cd ./wrt/
 
           make -j$(nproc) || make -j$(nproc) V=s
 
-      - name: Machine Information
+      - name: Machine Information(机器信息)
         run: |
           cd ./wrt/
 
@@ -238,7 +238,7 @@ jobs:
           du -h --max-depth=1
           echo "======================="
 
-      - name: Package Firmware
+      - name: Package Firmware(打包固件)
         run: |
           cd ./wrt/ && mkdir ./upload/
 
@@ -246,7 +246,8 @@ jobs:
 
           if [[ $WRT_TEST != 'true' ]]; then
             echo "WRT_KVER=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^kernel - \K[\d\.]+' {} \;)" >> $GITHUB_ENV
-            echo "WRT_LIST=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^luci-(app|theme)[^ ]*' {} \; | tr '\n' ' ')" >> $GITHUB_ENV
+            # echo "WRT_LIST=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^luci-(app|theme)[^ ]*' {} \; | tr '\n' ' ')" >> $GITHUB_ENV
+            echo "WRT_LIST=$(find ./bin/targets/ -type f -name '*.manifest' -exec grep -oE '^luci-(app|theme)[^ ]*' {} \; | tr '\n' ' ')" >> $GITHUB_ENV
 
             find ./bin/targets/ -iregex ".*\(buildinfo\|json\|sha256sums\|packages\)$" -exec rm -rf {} +
 
@@ -262,7 +263,7 @@ jobs:
             make clean -j$(nproc)
           fi
 
-      - name: Release Firmware
+      - name: Release Firmware(发布固件)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{env.WRT_CONFIG}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
