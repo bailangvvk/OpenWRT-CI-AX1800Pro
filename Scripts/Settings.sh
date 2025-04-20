@@ -196,7 +196,7 @@ echo "CONFIG_PACKAGE_v2ray-geosite=y" >> ./.config
 # QuickStart
 # echo "CONFIG_PACKAGE_luci-app-quickstart=y" >> ./.config
 # filebrowser-go
-echo "CONFIG_PACKAGE_luci-app-filebrowser-go=y" >> ./.config
+# echo "CONFIG_PACKAGE_luci-app-filebrowser-go=y" >> ./.config
 # 图形化web UI luci-app-uhttpd	
 echo "CONFIG_PACKAGE_luci-app-uhttpd=y" >> ./.config
 # 多播
@@ -212,7 +212,7 @@ echo "CONFIG_PACKAGE_luci-app-filemanager=y" >> ./.config
 # 基于Golang的多协议转发工具
 echo "CONFIG_PACKAGE_luci-app-gost=y" >> ./.config
 # Go语言解析
-# echo "CONFIG_PACKAGE_golang=y" >> ./.config
+echo "CONFIG_PACKAGE_golang=y" >> ./.config
 # Git
 echo "CONFIG_PACKAGE_git-http=y" >> ./.config
 # Nginx替换Uhttpd
