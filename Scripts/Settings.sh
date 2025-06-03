@@ -50,6 +50,7 @@ if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 	echo "CONFIG_FEED_sqm_scripts_nss=n" >> ./.config
 	#设置NSS版本
 	echo "CONFIG_NSS_FIRMWARE_VERSION_11_4=n" >> ./.config
+ 	echo "CONFIG_NSS_FIRMWARE_VERSION_12_2=n" >> ./.config
 	echo "CONFIG_NSS_FIRMWARE_VERSION_12_5=y" >> ./.config
 	#开启sqm-nss插件
 	echo "CONFIG_PACKAGE_luci-app-sqm=y" >> ./.config
@@ -60,3 +61,38 @@ if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 		echo "qualcommax set up nowifi successfully!"
 	fi
 fi
+
+# 想要剔除的
+# echo "CONFIG_PACKAGE_htop=n" >> ./.config
+# echo "CONFIG_PACKAGE_iperf3=n" >> ./.config
+echo "CONFIG_PACKAGE_luci-app-wolplus=n" >> ./.config
+echo "CONFIG_PACKAGE_luci-app-tailscale=n" >> ./.config
+echo "CONFIG_PACKAGE_luci-app-advancedplus=n" >> ./.config
+echo "CONFIG_PACKAGE_luci-theme-kucat=n" >> ./.config
+
+# 可以让FinalShell查看文件列表并且ssh连上不会自动断开
+echo "CONFIG_PACKAGE_openssh-sftp-server=y" >> ./.config
+# 解析、查询、操作和格式化 JSON 数据
+echo "CONFIG_PACKAGE_jq=y" >> ./.config
+# 简单明了的系统资源占用查看工具
+echo "CONFIG_PACKAGE_btop=y" >> ./.config
+# 多网盘存储
+# echo "CONFIG_PACKAGE_luci-app-alist=y" >> ./.config
+# 强大的工具(需要添加源或git clone)
+# echo "CONFIG_PACKAGE_luci-app-lucky=y" >> ./.config
+# 网络通信工具
+echo "CONFIG_PACKAGE_curl=y" >> ./.config
+# CPU 性能优化调节设置
+# echo "CONFIG_PACKAGE_luci-app-cpufreq=y" >> ./.config
+# 图形化流量监控
+# echo "CONFIG_PACKAGE_luci-app-wrtbwmon=y" >> ./.config
+# turboacc
+# echo "CONFIG_PACKAGE_luci-app-turboacc=y" >> ./.config
+# BBR 拥塞控制算法(终端侧)
+echo "CONFIG_PACKAGE_kmod-tcp-bbr=y" >> ./.config
+echo "CONFIG_DEFAULT_tcp_bbr=y" >> ./.config
+# CAKE 一种现代化的队列管理算法(路由侧)
+# echo "CONFIG_PACKAGE_luci-app-sqm=y" >> ./.config
+# echo "CONFIG_PACKAGE_kmod-sched-cake=y" >> ./.config
+# docker(只能集成)
+# echo "CONFIG_PACKAGE_luci-app-dockerman=y" >> ./.config
