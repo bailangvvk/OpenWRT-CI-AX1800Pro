@@ -101,6 +101,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          sudo add-apt-repository universe
           sudo -E apt -yqq update
           sudo -E apt -yqq purge firefox
           sudo -E apt -yqq full-upgrade
@@ -108,6 +109,8 @@ jobs:
           sudo -E apt -yqq autoclean
           sudo -E apt -yqq clean
           # sudo -E apt -yqq install dos2unix libfuse-dev
+          apt search dos2unix
+          apt search libfuse-dev
           sudo -E apt -yqq install dos2unix libfuse-dev curl ca-certificates
           sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
           sudo -E systemctl daemon-reload
