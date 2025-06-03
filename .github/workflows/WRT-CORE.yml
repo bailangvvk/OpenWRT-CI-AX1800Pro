@@ -101,25 +101,37 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          echo "===== sources.list ====="
+          cat /etc/apt/sources.list
+          echo "===== sources.list.d ====="
+          ls -l /etc/apt/sources.list.d/
+          
           sudo add-apt-repository universe
-          sudo -E apt -yqq update
-          sudo -E apt -yqq purge firefox
-          sudo -E apt -yqq full-upgrade
-          sudo -E apt -yqq autoremove --purge
-          sudo -E apt -yqq autoclean
-          sudo -E apt -yqq clean
-          # sudo -E apt -yqq install dos2unix libfuse-dev
-          apt search dos2unix
-          apt search libfuse-dev
-          sudo -E apt -yqq install dos2unix libfuse-dev curl ca-certificates
+          sudo apt-get update -yqq
+          
+          echo "===== apt-cache policy ====="
+          apt-cache policy
+          
+          echo "===== apt-cache policy dos2unix libfuse-dev ====="
+          apt-cache policy dos2unix libfuse-dev
+          
+          sudo apt-get purge -yqq firefox
+          sudo apt-get full-upgrade -yqq
+          sudo apt-get autoremove --purge -yqq
+          sudo apt-get autoclean -yqq
+          sudo apt-get clean -yqq
+          
+          sudo apt-get install -yqq dos2unix libfuse-dev curl ca-certificates
+          
           sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
-          sudo -E systemctl daemon-reload
-          sudo -E timedatectl set-timezone "Asia/Shanghai"
+          
+          sudo systemctl daemon-reload
+          sudo timedatectl set-timezone "Asia/Shanghai"
 
           # sudo mkdir -p /mnt/build_wrt
           # sudo chown $USER:$USER /mnt/build_wrt
           # sudo ln -s /mnt/build_wrt $GITHUB_WORKSPACE/wrt
-
+          
           echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
 
       - name: Install latest Clang/LLVM(安装最新的 LLVM/Clang)
