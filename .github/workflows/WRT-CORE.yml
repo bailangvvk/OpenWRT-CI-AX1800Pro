@@ -102,36 +102,36 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           sudo tee /etc/apt/sources.list.d/ubuntu.sources <<EOF
-Types: deb
-URIs: http://archive.ubuntu.com/ubuntu
-Suites: jammy
-Components: main universe restricted multiverse
-
-Types: deb-src
-URIs: http://archive.ubuntu.com/ubuntu
-Suites: jammy
-Components: main universe restricted multiverse
-
-Types: deb
-URIs: http://archive.ubuntu.com/ubuntu
-Suites: jammy-updates
-Components: main universe restricted multiverse
-
-Types: deb-src
-URIs: http://archive.ubuntu.com/ubuntu
-Suites: jammy-updates
-Components: main universe restricted multiverse
-
-Types: deb
-URIs: http://archive.ubuntu.com/ubuntu
-Suites: jammy-security
-Components: main universe restricted multiverse
-
-Types: deb-src
-URIs: http://archive.ubuntu.com/ubuntu
-Suites: jammy-security
-Components: main universe restricted multiverse
-EOF
+          Types: deb
+          URIs: http://archive.ubuntu.com/ubuntu
+          Suites: jammy
+          Components: main universe restricted multiverse
+          
+          Types: deb-src
+          URIs: http://archive.ubuntu.com/ubuntu
+          Suites: jammy
+          Components: main universe restricted multiverse
+          
+          Types: deb
+          URIs: http://archive.ubuntu.com/ubuntu
+          Suites: jammy-updates
+          Components: main universe restricted multiverse
+          
+          Types: deb-src
+          URIs: http://archive.ubuntu.com/ubuntu
+          Suites: jammy-updates
+          Components: main universe restricted multiverse
+          
+          Types: deb
+          URIs: http://archive.ubuntu.com/ubuntu
+          Suites: jammy-security
+          Components: main universe restricted multiverse
+          
+          Types: deb-src
+          URIs: http://archive.ubuntu.com/ubuntu
+          Suites: jammy-security
+          Components: main universe restricted multiverse
+          EOF
 
           echo "===== sources.list ====="
           cat /etc/apt/sources.list
