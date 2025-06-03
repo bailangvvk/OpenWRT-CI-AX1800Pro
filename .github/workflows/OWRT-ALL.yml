@@ -3,9 +3,12 @@ name: OWRT-ALL
 
 #CI计划
 on:
-  #自动编译：当Auto-Clean运行完成后
-  workflow_run:
-    workflows: ["Auto-Clean"]
+  # 自动编译：当Auto-Clean运行完成后
+  # workflow_run:
+  #   workflows: ["Auto-Clean"]
+  # 自动清理：每天早上6点
+  schedule:
+    - cron: 0 22 * * *
     types:
       - completed
   #手动编译
