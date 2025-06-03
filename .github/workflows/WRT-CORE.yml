@@ -101,6 +101,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          sudo mkdir -p /etc/apt/sources.list.d
           sudo tee /etc/apt/sources.list.d/ubuntu.sources <<EOF
           Types: deb
           URIs: http://archive.ubuntu.com/ubuntu
