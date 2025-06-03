@@ -78,88 +78,39 @@ jobs:
           echo "--------------------------硬盘信息--------------------------"
           echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
 
-      - name: Free Disk Space(清理磁盘空间)
-        uses: endersonmenezes/free-disk-space@main
-        with:
-          testing: false
-          remove_android: true
-          remove_dotnet: true
-          remove_haskell: true
-          remove_tool_cache: true
-          remove_swap: true
-          remove_packages: "android* azure* clang* dotnet* firefox* ghc* golang* google* libclang* libgl1* lld* llvm* \
-            microsoft* mongodb* mono* mysql* nodejs* openjdk* php* postgresql* powershell* snap* temurin* yarn* zulu*"
-          remove_packages_one_command: true
-          remove_folders: "/etc/apt/sources.list.d* /etc/mono* /etc/mysql* /usr/include/linux/android* /usr/lib/llvm* /usr/lib/mono* \
-            /usr/local/lib/android* /usr/local/lib/node_modules* /usr/local/share/chromium* /usr/local/share/powershell* \
-            /usr/local/share/vcpkg/ports/azure* /usr/local/share/vcpkg/ports/google* /usr/local/share/vcpkg/ports/libpq/android* \
-            /usr/local/share/vcpkg/ports/llvm* /usr/local/share/vcpkg/ports/mysql* /usr/local/share/vcpkg/ports/snap* \
-            /usr/share/azure* /usr/share/dotnet* /usr/share/glade* /usr/share/miniconda* /usr/share/php* /usr/share/swift \
-            /var/lib/mysql* /var/log/azure*"
+      # - name: Free Disk Space(清理磁盘空间)
+      #   uses: endersonmenezes/free-disk-space@main
+      #   with:
+      #     testing: false
+      #     remove_android: true
+      #     remove_dotnet: true
+      #     remove_haskell: true
+      #     remove_tool_cache: true
+      #     remove_swap: true
+      #     remove_packages: "android* azure* clang* dotnet* firefox* ghc* golang* google* libclang* libgl1* lld* llvm* \
+      #       microsoft* mongodb* mono* mysql* nodejs* openjdk* php* postgresql* powershell* snap* temurin* yarn* zulu*"
+      #     remove_packages_one_command: true
+      #     remove_folders: "/etc/apt/sources.list.d* /etc/mono* /etc/mysql* /usr/include/linux/android* /usr/lib/llvm* /usr/lib/mono* \
+      #       /usr/local/lib/android* /usr/local/lib/node_modules* /usr/local/share/chromium* /usr/local/share/powershell* \
+      #       /usr/local/share/vcpkg/ports/azure* /usr/local/share/vcpkg/ports/google* /usr/local/share/vcpkg/ports/libpq/android* \
+      #       /usr/local/share/vcpkg/ports/llvm* /usr/local/share/vcpkg/ports/mysql* /usr/local/share/vcpkg/ports/snap* \
+      #       /usr/share/azure* /usr/share/dotnet* /usr/share/glade* /usr/share/miniconda* /usr/share/php* /usr/share/swift \
+      #       /var/lib/mysql* /var/log/azure*"
 
       - name: Initialization Environment(安装依赖环境)
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo mkdir -p /etc/apt/sources.list.d
-          sudo tee /etc/apt/sources.list.d/ubuntu.sources <<EOF
-          Types: deb
-          URIs: http://archive.ubuntu.com/ubuntu
-          Suites: jammy
-          Components: main universe restricted multiverse
-          
-          Types: deb-src
-          URIs: http://archive.ubuntu.com/ubuntu
-          Suites: jammy
-          Components: main universe restricted multiverse
-          
-          Types: deb
-          URIs: http://archive.ubuntu.com/ubuntu
-          Suites: jammy-updates
-          Components: main universe restricted multiverse
-          
-          Types: deb-src
-          URIs: http://archive.ubuntu.com/ubuntu
-          Suites: jammy-updates
-          Components: main universe restricted multiverse
-          
-          Types: deb
-          URIs: http://archive.ubuntu.com/ubuntu
-          Suites: jammy-security
-          Components: main universe restricted multiverse
-          
-          Types: deb-src
-          URIs: http://archive.ubuntu.com/ubuntu
-          Suites: jammy-security
-          Components: main universe restricted multiverse
-          EOF
-
-          echo "===== sources.list ====="
-          cat /etc/apt/sources.list
-          echo "===== sources.list.d ====="
-          ls -l /etc/apt/sources.list.d/
-          
-          sudo add-apt-repository universe
-          sudo apt-get update -yqq
-          
-          echo "===== apt-cache policy ====="
-          apt-cache policy
-          
-          echo "===== apt-cache policy dos2unix libfuse-dev ====="
-          apt-cache policy dos2unix libfuse-dev
-          
-          sudo apt-get purge -yqq firefox
-          sudo apt-get full-upgrade -yqq
-          sudo apt-get autoremove --purge -yqq
-          sudo apt-get autoclean -yqq
-          sudo apt-get clean -yqq
-          
-          sudo apt-get install -yqq dos2unix libfuse-dev curl ca-certificates
-          
+          sudo -E apt -yqq purge firefox
+          sudo -E apt -yqq update
+          sudo -E apt -yqq full-upgrade
+          sudo -E apt -yqq autoremove --purge
+          sudo -E apt -yqq autoclean
+          sudo -E apt -yqq clean
+          sudo -E apt -yqq install dos2unix libfuse-dev
           sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
-          
-          sudo systemctl daemon-reload
-          sudo timedatectl set-timezone "Asia/Shanghai"
+          sudo -E systemctl daemon-reload
+          sudo -E timedatectl set-timezone "Asia/Shanghai"
 
           # sudo mkdir -p /mnt/build_wrt
           # sudo chown $USER:$USER /mnt/build_wrt
