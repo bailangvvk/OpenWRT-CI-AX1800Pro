@@ -99,3 +99,7 @@ echo "CONFIG_DEFAULT_tcp_bbr=y" >> ./.config
 # echo "CONFIG_PACKAGE_kmod-sched-cake=y" >> ./.config
 # docker(只能集成)
 # echo "CONFIG_PACKAGE_luci-app-dockerman=y" >> ./.config
+# Nginx替换Uhttpd
+echo "CONFIG_PACKAGE_nginx-mod-luci=y" >> ./.config
+# Nginx的图形化界面
+echo "CONFIG_PACKAGE_luci-app-nginx=y" >> ./.config
