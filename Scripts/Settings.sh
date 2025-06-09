@@ -118,8 +118,8 @@ echo "CONFIG_KERNEL_XDP_SOCKETS=y" >> ./.config
 echo "CONFIG_PACKAGE_bpftool-full=y" >> ./.config
 
 #开启内存回收补丁
-echo "CONFIG_KERNEL_SKB_RECYCLER=y" >> ./.config
-echo "CONFIG_KERNEL_SKB_RECYCLER_MULTI_CPU=y" >> ./.config
+# echo "CONFIG_KERNEL_SKB_RECYCLER=y" >> ./.config
+# echo "CONFIG_KERNEL_SKB_RECYCLER_MULTI_CPU=y" >> ./.config
 
 # echo "CONFIG_BPF=y" >> ./target/linux/qualcommax/config-6.6
 # echo "CONFIG_BPF_SYSCALL=y" >> ./target/linux/qualcommax/config-6.6
@@ -155,14 +155,14 @@ echo "CONFIG_PACKAGE_luci-app-wolplus=n" >> ./.config
 echo "CONFIG_PACKAGE_luci-app-tailscale=n" >> ./.config
 echo "CONFIG_PACKAGE_luci-app-advancedplus=n" >> ./.config
 echo "CONFIG_PACKAGE_luci-theme-kucat=n" >> ./.config
-echo "CONFIG_PACKAGE_luci-app-mihomo=n" >> ./.config
-# 使用opkg替换apk安装器
+# echo "CONFIG_PACKAGE_luci-app-mihomo=n" >> ./.config
+# # 使用opkg替换apk安装器
 # echo "CONFIG_PACKAGE_opkg=y" >> ./.config
 # echo "CONFIG_OPKG_USE_CURL=y" >> ./.config
 # echo "# CONFIG_USE_APK is not set" >> ./.config
 # 可以让FinalShell查看文件列表并且ssh连上不会自动断开
 echo "CONFIG_PACKAGE_openssh-sftp-server=y" >> ./.config
-# 解析、查询、操作和格式化 JSON 数据
+# # 解析、查询、操作和格式化 JSON 数据
 echo "CONFIG_PACKAGE_jq=y" >> ./.config
 # base64 修改码云上的内容 需要用到
 echo "CONFIG_PACKAGE_coreutils-base64=y" >> ./.config
@@ -170,21 +170,21 @@ echo "CONFIG_PACKAGE_coreutils=y" >> ./.config
 # 简单明了的系统资源占用查看工具
 echo "CONFIG_PACKAGE_btop=y" >> ./.config
 # 多网盘存储
-echo "CONFIG_PACKAGE_luci-app-alist=y" >> ./.config
-# 强大的工具Lucky大吉(需要添加源或git clone)
-echo "CONFIG_PACKAGE_luci-app-lucky=y" >> ./.config
-# 网络通信工具
-echo "CONFIG_PACKAGE_curl=y" >> ./.config
-echo "CONFIG_PACKAGE_tcping=y" >> ./.config
-# BBR 拥塞控制算法(终端侧)
-echo "CONFIG_PACKAGE_kmod-tcp-bbr=y" >> ./.config
-echo "CONFIG_DEFAULT_tcp_bbr=y" >> ./.config
-# 磁盘管理
-echo "CONFIG_PACKAGE_luci-app-diskman=y" >> ./.config
-echo "CONFIG_PACKAGE_cfdisk=y" >> ./.config
-# 其他调整
-# 大鹅
-echo "CONFIG_PACKAGE_luci-app-daed=y" >> ./.config
+# echo "CONFIG_PACKAGE_luci-app-alist=y" >> ./.config
+# # 强大的工具Lucky大吉(需要添加源或git clone)
+# echo "CONFIG_PACKAGE_luci-app-lucky=y" >> ./.config
+# # 网络通信工具
+# echo "CONFIG_PACKAGE_curl=y" >> ./.config
+# echo "CONFIG_PACKAGE_tcping=y" >> ./.config
+# # BBR 拥塞控制算法(终端侧)
+# echo "CONFIG_PACKAGE_kmod-tcp-bbr=y" >> ./.config
+# echo "CONFIG_DEFAULT_tcp_bbr=y" >> ./.config
+# # 磁盘管理
+# echo "CONFIG_PACKAGE_luci-app-diskman=y" >> ./.config
+# echo "CONFIG_PACKAGE_cfdisk=y" >> ./.config
+# # 其他调整
+# # 大鹅
+# echo "CONFIG_PACKAGE_luci-app-daed=y" >> ./.config
 # # 大鹅-next
 # # echo "CONFIG_PACKAGE_luci-app-daed-next=y" >> ./.config
 # # 连上ssh不会断开并且显示文件管理
