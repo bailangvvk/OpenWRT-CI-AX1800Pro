@@ -1,4 +1,4 @@
-# 使用 BBR暴力提速~~
+# ~~使用 BBR暴力提速~~
 
 # OpenWRT-CI
 云编译OpenWRT固件
